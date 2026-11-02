@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="script.js"></script>
+    <script src="LogOut.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<button id="addBtn" onclick="openWindow()">Add task</button>
+
+<div id="window" style="display: none;">
+    <h2>Add your task</h2>
+
+    <input id="name" placeholder="Enter your task name">
+
+    <input id="tText" placeholder="description">
+
+    <select id="status">
+        <option value="3">Not started</option>
+        <option value="2">started</option>
+        <option value="1">done</option>
+    </select>
+
+    <select id="tPriority">
+        <option value="3">not important</option>
+        <option value="2">important</option>
+        <option value="1">very important</option>
+    </select>
+    <button id="closeW" onclick="closeWindow()">Save</button>
+
+</div>
+
+<div id="taskList">
+
+</div>
+
+<button id="LogOut" onclick="LogoutUser()">Log out</button>
+
+</body>
+
+</html>
