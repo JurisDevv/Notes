@@ -25,6 +25,8 @@ public class LoginServlet extends HttpServlet {
             String username = req.getParameter("username");
             String password = req.getParameter("password");
 
+            System.out.println("Login attempt: " + username);
+
             if (username == null || password == null) {
                 resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
@@ -42,9 +44,13 @@ public class LoginServlet extends HttpServlet {
                     if (rs.next()) {
                         String passwordFromDb = rs.getString("password_hash");
 
+                        System.out.println("User found in database");
+
                         boolean valid = BCrypt.verifyer()
                                 .verify(password.toCharArray(), passwordFromDb)
                                 .verified;
+
+                        System.out.println("Password valid: " + valid);
 
                         if (valid) {
                             int userId = rs.getInt("id");

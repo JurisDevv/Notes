@@ -27,13 +27,27 @@ public class regServlet extends HttpServlet {
             String password = req.getParameter("password");
             String sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)";
 
-            if (name == null || !name.matches("[a-zA-Z0-9_]{3,20}")) {
+            System.out.println("Registration started");
+            System.out.println("Username: " + name);
+
+            boolean validUsername = name != null &&
+                    name.matches("[a-zA-Z0-9_]{3,20}");
+
+            boolean validPassword = password != null &&
+                    password.matches("[a-zA-Z0-9]{8,}");
+
+            System.out.println("Username valid: " + validUsername);
+            System.out.println("Password valid: " + validPassword);
+
+            if (!validUsername) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 resp.getWriter().write("Username must contain 3-20 English letters, numbers or _");
                 return;
             }
 
-            if (password == null || !password.matches("[a-zA-Z0-9]{8,}")) {
-                resp.getWriter().write("Password must contain at least 8 English letters or numbers");
+            if (!validPassword) {
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                resp.getWriter().write("Password must contain at least 8 characters");
                 return;
             }
 
@@ -45,7 +59,15 @@ public class regServlet extends HttpServlet {
             ps.setString(1, name);
             ps.setString(2, passwordHash);
 
-            ps.executeUpdate();
+            System.out.println("Executing INSERT...");
+
+            int rows = ps.executeUpdate();
+
+            System.out.println("Rows inserted: " + rows);
+
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.getWriter().write("Registration successful");
+
         } catch (SQLException e) {
             e.printStackTrace();
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
