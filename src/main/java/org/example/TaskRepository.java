@@ -4,17 +4,17 @@ import java.sql.*;
 
 public class TaskRepository {
 
-    public int addTask(String task, String text, int priority, int status, int userId) {
-        try {
-            Connection conn = Database.getConn();
+    public int addTask(String task, String text, int priority,
+                       int status, int userId) {
 
-            String sql = """
-            INSERT INTO "NApp" (task, text, priority, status, user_id)
-            VALUES (?, ?, ?, ?, ?)
-            RETURNING id
+        String sql = """
+        INSERT INTO "NApp" (task, text, priority, status, user_id)
+        VALUES (?, ?, ?, ?, ?)
+        RETURNING id
         """;
 
-            PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection conn = Database.getConn();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, task);
             ps.setString(2, text);
@@ -22,10 +22,10 @@ public class TaskRepository {
             ps.setInt(4, status);
             ps.setInt(5, userId);
 
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return rs.getInt("id");
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id");
+                }
             }
 
         } catch (SQLException e) {
@@ -66,15 +66,17 @@ public class TaskRepository {
         }
     }
 
-    public void deleteTask(int id) {
+    public void deleteTask(int id, int userId) {
         try{
             Connection conn = Database.getConn();
 
-            String sql = "DELETE FROM \"NApp\" WHERE id = ?";
+            String sql = "DELETE FROM \"NApp\"\n" +
+                    "WHERE id = ? AND user_id = ?;";
 
             PreparedStatement ps = conn.prepareStatement(sql);
 
             ps.setInt(1, id);
+            ps.setInt(2,userId );
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
